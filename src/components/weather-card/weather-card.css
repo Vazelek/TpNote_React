@@ -1,0 +1,16 @@
+.weather-card {
+    background-color: #cce0ff;
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    border-radius: 8px;
+}
+
+.search-city {
+    background-color: #ffffff;
+    border: 1px solid #c5c5c5;
+    border-radius: 4px;
+    padding: 12px;
+    color: #000000;
+    font-size: 16px;
+}
