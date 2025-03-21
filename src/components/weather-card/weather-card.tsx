@@ -16,11 +16,9 @@ interface LocationData {
 }
 
 const WeatherCard = () => {
-    const [city, setCity] = React.useState<AvailableCity | string>(localStorage.getItem("city") || '');
-    const [country, setCountry] = React.useState<string | null>(localStorage.getItem("country") || null);
-    const [weatherData, setWeatherData] = useState<WeatherDataProps | null>(
-        localStorage.getItem("weatherData") ? JSON.parse(localStorage.getItem("weatherData")!) : null
-    );
+    const [city, setCity] = React.useState<AvailableCity | string>(''); //(localStorage.getItem("city") || '');
+    const [country, setCountry] = React.useState<string | null>(null); //(localStorage.getItem("country") || null);
+    const [weatherData, setWeatherData] = useState<WeatherDataProps | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<ApiError | null>(null);
 
@@ -61,9 +59,9 @@ const WeatherCard = () => {
                 setWeatherData(result);
 
                 // Save retrieved data in local storage
-                localStorage.setItem("city", city);
-                localStorage.setItem("country", country || '');
-                localStorage.setItem("weatherData", JSON.stringify(result));
+                // localStorage.setItem("city", city);
+                // localStorage.setItem("country", country || '');
+                // localStorage.setItem("weatherData", JSON.stringify(result));
             } catch (e) {
                 const error = e as ApiError;
                 setError({
