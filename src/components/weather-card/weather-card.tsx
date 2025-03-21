@@ -1,6 +1,15 @@
 import React, {useEffect, useState} from "react";
 import WeatherData, {WeatherDataProps} from "../weather-data/weather-data.tsx";
 import './weather-card.css'
+import {
+    AVAILABLE_CITIES,
+    AvailableCity,
+    AvailableWeathers,
+    COUNTRY_OF_CITY,
+    FR_CITY_NAME,
+    WEATHER_TRANSLATION
+} from "../../constants/constants.tsx";
+import Select from "react-select";
 
 interface ApiError {
     message: string;
@@ -9,7 +18,7 @@ interface ApiError {
 }
 
 const WeatherCard = () => {
-    const [city, setCity] = React.useState<string>('');
+    const [city, setCity] = React.useState<AvailableCity | string>('');
 
     const [data, setData] = useState<WeatherDataProps | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -38,7 +47,7 @@ const WeatherCard = () => {
                         } as ApiError;
                     }
                 }
-                
+
                 const results: WeatherDataProps[] = await response.json();
                 result = results[Math.floor(Math.random() * results.length)];
 
@@ -75,9 +84,15 @@ const WeatherCard = () => {
 
     return (
         <div className={"weather-card"}>
-            <input className={"search-city"} placeholder={"Rechercher"}/>
-            <WeatherData city={data.city} country={data.country} temperature={data.temperature}
-                         weather_description={data.weather_description}/>
+            <Select options={Object.entries(FR_CITY_NAME).map(([key, value]) => ({value: key, label: value}))}
+                    isSearchable={true}
+                    isClearable={false}
+                    placeholder={"Rechercher"}
+                    onChange={(selectedOption) => setCity(selectedOption?.value ?? '')}/>
+            <WeatherData city={AVAILABLE_CITIES.some(a => a === city) ? FR_CITY_NAME[city as AvailableCity] : city}
+                         country={AVAILABLE_CITIES.some(a => a === city) ? COUNTRY_OF_CITY[city as AvailableCity] : 'France TODO'}
+                         temperature={data.temperature}
+                         weather_description={WEATHER_TRANSLATION[data.weather_description as AvailableWeathers]}/>
         </div>
     );
 };
