@@ -1,24 +1,24 @@
 import './weather-data.css'
 
-interface WeatherDataProps {
+export interface WeatherDataProps {
     city: string;
     country: string;
     temperature: number;
-    weather: string;
+    weather_description: string;
 }
 
-const WeatherData = ({city, country, temperature, weather}: WeatherDataProps) => {
+const WeatherData = ({city, country, temperature, weather_description}: WeatherDataProps) => {
     return (
         <div className={"weather-data-container"}>
             <div className={"location"}>
-                <span className={"city"}>{city}</span>
+                <span className={"city"}>{city.toUpperCase()}</span>
                 <span className={"city-country-separator"}>•</span>
-                <span className={"country"}>{country}</span>
+                <span className={"country"}>{country.toUpperCase()}</span>
             </div>
             <div className={"weather-data"}>
                 <div className={"weather-data-text"}>
                     <span className={"temperature"}>{temperature}°C</span>
-                    <span className={"weather"}>{weather}</span>
+                    <span className={"weather"}>{weather_description}</span>
                 </div>
                 <div className={"weather-icon"}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
