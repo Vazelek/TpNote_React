@@ -10,14 +10,23 @@ interface ApiError {
     code?: string;
 }
 
+interface LocationData {
+    city: string;
+    country: string;
+}
+
 const WeatherCard = () => {
     const [city, setCity] = React.useState<AvailableCity | string>('');
+    const [country, setCountry] = React.useState<string | null>(null);
 
-    const [data, setData] = useState<WeatherDataProps | null>(null);
+    const [weatherData, setWeatherData] = useState<WeatherDataProps | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<ApiError | null>(null);
 
     useEffect(() => {
+        if (!city) {
+            return;
+        }
         const fetchData = async (): Promise<void> => {
             try {
                 setLoading(true);
@@ -27,9 +36,13 @@ const WeatherCard = () => {
                 const trueUrl: string = `${url}?search=${city}`;
 
                 let response = await fetch(trueUrl);
-                let result: WeatherDataProps | null = null;
+                let results: WeatherDataProps[] = [];
 
-                if (!response.ok) {
+                if (response.ok) {
+                    results = await response.json();
+                }
+
+                if (!response.ok || results.length === 0) {
                     // The city might not exist, so retrieve a random country weather
                     response = await fetch(url);
 
@@ -39,13 +52,12 @@ const WeatherCard = () => {
                             status: response.status,
                         } as ApiError;
                     }
+
+                    results = await response.json();
                 }
 
-                const results: WeatherDataProps[] = await response.json();
-                result = results[Math.floor(Math.random() * results.length)];
-
-                console.log(result)
-                setData(result);
+                const result = results[Math.floor(Math.random() * results.length)];
+                setWeatherData(result);
             } catch (e) {
                 const error = e as ApiError;
                 setError({
@@ -58,14 +70,41 @@ const WeatherCard = () => {
             }
         };
 
+
         fetchData().then();
     }, [city]);
+
+    useEffect(() => {
+        if (!navigator.geolocation) {
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const {latitude, longitude} = position.coords;
+
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                    const data: LocationData = (await response.json()).address;
+                    setCity(data.city);
+                    setCountry(data.country);
+                } catch (err) {
+                    setCountry(null);
+                    console.error("Erreur lors de la récupération des données de localisation", err)
+                }
+            },
+            (err) => {
+                setCountry(null);
+                console.error("Erreur lors de la récupération des données de localisation", err)
+            }
+        );
+    }, []);
 
     if (loading) {
         return <div className='loading'>Chargement en cours...</div>;
     }
 
-    if (error || !data) {
+    if (error || !weatherData) {
         return (
             <div className='error'>
                 <h3>Erreur</h3>
@@ -81,11 +120,14 @@ const WeatherCard = () => {
                     isSearchable={true}
                     isClearable={false}
                     placeholder={"Rechercher"}
-                    onChange={(selectedOption) => setCity(selectedOption?.value ?? '')}/>
+                    onChange={(selectedOption) => {
+                        setCity(selectedOption?.value ?? '');
+                        setCountry(null);
+                    }}/>
             <WeatherData city={AVAILABLE_CITIES.some(a => a === city) ? FR_CITY_NAME[city as AvailableCity] : city}
-                         country={AVAILABLE_CITIES.some(a => a === city) ? COUNTRY_OF_CITY[city as AvailableCity] : 'France TODO'}
-                         temperature={data.temperature}
-                         weather_description={data.weather_description}/>
+                         country={AVAILABLE_CITIES.some(a => a === city) ? COUNTRY_OF_CITY[city as AvailableCity] : (country ?? '')}
+                         temperature={weatherData.temperature}
+                         weather_description={weatherData.weather_description}/>
         </div>
     );
 };
