@@ -16,11 +16,12 @@ interface LocationData {
 }
 
 const WeatherCard = () => {
-    const [city, setCity] = React.useState<AvailableCity | string>('');
-    const [country, setCountry] = React.useState<string | null>(null);
-
-    const [weatherData, setWeatherData] = useState<WeatherDataProps | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [city, setCity] = React.useState<AvailableCity | string>(localStorage.getItem("city") || '');
+    const [country, setCountry] = React.useState<string | null>(localStorage.getItem("country") || null);
+    const [weatherData, setWeatherData] = useState<WeatherDataProps | null>(
+        localStorage.getItem("weatherData") ? JSON.parse(localStorage.getItem("weatherData")!) : null
+    );
+    const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<ApiError | null>(null);
 
     useEffect(() => {
@@ -58,6 +59,11 @@ const WeatherCard = () => {
 
                 const result = results[Math.floor(Math.random() * results.length)];
                 setWeatherData(result);
+
+                // Save retrieved data in local storage
+                localStorage.setItem("city", city);
+                localStorage.setItem("country", country || '');
+                localStorage.setItem("weatherData", JSON.stringify(result));
             } catch (e) {
                 const error = e as ApiError;
                 setError({
@@ -101,12 +107,12 @@ const WeatherCard = () => {
     }, []);
 
     if (loading) {
-        return <div className='loading'>Chargement en cours...</div>;
+        return <div className={"weather-card"}>Chargement en cours...</div>;
     }
 
     if (error || !weatherData) {
         return (
-            <div className='error'>
+            <div className={"weather-card"}>
                 <h3>Erreur</h3>
                 <p>{error?.message}</p>
                 {error?.status && <p>Statut: {error?.status}</p>}

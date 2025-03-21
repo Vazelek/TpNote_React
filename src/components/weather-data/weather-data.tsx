@@ -27,8 +27,10 @@ const WeatherData = ({city, country, temperature, weather_description}: WeatherD
                     <span className={"temperature"}>{temperature}°C</span>
                     <span className={"weather"}>{WEATHER_TRANSLATION[weather_description]}</span>
                 </div>
-                <div className={"weather-icon"}>
-                    {WEATHER_ICONS[weather_description]}
+                <div className={"weather-icon-container"}>
+                    <div className={"weather-icon"}>
+                        {WEATHER_ICONS[weather_description]}
+                    </div>
                 </div>
             </div>
             <div className={"weather-tips"}>
