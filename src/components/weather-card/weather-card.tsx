@@ -1,14 +1,7 @@
 import React, {useEffect, useState} from "react";
 import WeatherData, {WeatherDataProps} from "../weather-data/weather-data.tsx";
 import './weather-card.css'
-import {
-    AVAILABLE_CITIES,
-    AvailableCity,
-    AvailableWeathers,
-    COUNTRY_OF_CITY,
-    FR_CITY_NAME,
-    WEATHER_TRANSLATION
-} from "../../constants/constants.tsx";
+import {AVAILABLE_CITIES, AvailableCity, COUNTRY_OF_CITY, FR_CITY_NAME} from "../../constants/constants.tsx";
 import Select from "react-select";
 
 interface ApiError {
@@ -92,7 +85,7 @@ const WeatherCard = () => {
             <WeatherData city={AVAILABLE_CITIES.some(a => a === city) ? FR_CITY_NAME[city as AvailableCity] : city}
                          country={AVAILABLE_CITIES.some(a => a === city) ? COUNTRY_OF_CITY[city as AvailableCity] : 'France TODO'}
                          temperature={data.temperature}
-                         weather_description={WEATHER_TRANSLATION[data.weather_description as AvailableWeathers]}/>
+                         weather_description={data.weather_description}/>
         </div>
     );
 };
